@@ -1,10 +1,13 @@
-function Game(gameInterface, numberOfPlayers) {
+function Game(gameInterface, numberOfPlayers, numberOfCardsPlayedDuringWar) {
 	
 	// Set a reference to the game interface
 	this.gameInterface = gameInterface;
 	
-	// Create an array for the players in the game
+	// Create a list for the players in the game
 	this.players = [];
+	
+	// Define how many cards should be played during war
+	this.numberOfCardsPlayedDuringWar = numberOfCardsPlayedDuringWar;
 	
 	// Start the game
 	this.restartGame(numberOfPlayers);
@@ -27,11 +30,17 @@ function Game(gameInterface, numberOfPlayers) {
 // This function will advance the game one round
 Game.prototype.playRound = function() {
 	
-	// Remove a card from the game interface for each player's hand
-	console.log("hi");	
-	// Pop a card off of each player's hand, and simultaneously check if this is the last round (<2 players have cards left)
+	// Initiate war between players with the max card
+	var winningPlayerAndCardsUsed = this.drawCards(this.players, 1);
+	
+	var winningPlayer = winningPlayerAndCardsUsed.winner;
+	var cardsWon = winningPlayerAndCardsUsed.cards;
+	
+	winningPlayer.addToPot(cardsWon);
+	
+	/*
+	// Pop a card off of each player's hand
 	var playerIndexToCardMap = {};
-	var playersWithCardsRemaining = [];
 	for (var i = 0; i < this.players.length; i++) {
 		
 		var player = this.players[i];
@@ -39,11 +48,6 @@ Game.prototype.playRound = function() {
 		if (player.hasCardsLeft()) {
 			
 			playerIndexToCardMap[i] = player.getCard();
-			
-			// If this player has cards left, add it to playersWithCardsRemaining
-			if (player.hasCardsLeft()) {
-				playersWithCardsRemaining.push(player)
-			}
 			
 		}
 	}
@@ -59,12 +63,12 @@ Game.prototype.playRound = function() {
 			
 			// If this is a new max, empty the playersWithTheMaxCard list, add this player, and redefine the maxCardValue
 			maxCardValue = cardValue;
-			playersWithTheMaxCard = [playerIndex];
+			playersWithTheMaxCard = [this.players[playerIndex]];
 			
 		} else if (cardValue == maxCardValue) {
 			
 			// If this player also has the max card value, add this player to playersWithTheMaxCard list
-			playersWithTheMaxCard.push(playerIndex);
+			playersWithTheMaxCard.push(this.players[playerIndex]);
 			
 		}
 		
@@ -72,11 +76,20 @@ Game.prototype.playRound = function() {
 	
 	// Check for ties
 	if (playersWithTheMaxCard.length > 1) {
+		alert("WARRR");
+		
+		// Initiate war between players with the max card
+		var winningPlayerAndCardsUsedDuringWar = this.drawCards(playersWithTheMaxCard);
+		
+		var winningPlayer = winningPlayerAndCardsUsedDuringWar.winner;
+		var cardsWon = winningPlayerAndCardsUsedDuringWar.cards;
+		
+		winningPlayer.addToPot(cardsWon);
 		
 	} else {
 		
 		// There were no ties, add all cards in play to the winning player
-		var winningPlayer = this.players[playersWithTheMaxCard[0]];
+		var winningPlayer = playersWithTheMaxCard[0];
 		var cardsWon = [];
 		
 		for (var playerIndex in playerIndexToCardMap) {
@@ -86,8 +99,22 @@ Game.prototype.playRound = function() {
 		winningPlayer.addToPot(cardsWon);
 		
 	}
+	*/
 	
-	// Check if no more players have cards, to end the game
+	// Calculate how many players have cards remaining, and who they are
+	var playersWithCardsRemaining = [];
+	for (var i = 0; i < this.players.length; i++) {
+		
+		var player = this.players[i];
+		
+		if (player.hasCardsLeft()) {
+			
+			playersWithCardsRemaining.push(player);
+			
+		}
+	}
+	
+	// End the game if there are less than 2 players with cards remaining
 	if (playersWithCardsRemaining.length < 2) {
 		
 		// If there is only 1 player with cards remaining, add their hand to their pot
@@ -103,6 +130,91 @@ Game.prototype.playRound = function() {
 		
 	}
 		
+}
+
+// Private
+// Returns the winning player and the cards used during war
+Game.prototype.drawCards = function(players, numberOfCardsPerPlayer) {
+	
+	// Draw 2 cards for this player
+	var playerIndexToCardArrayMap = {};
+	var cardsUsedInThisSessionOfWar = [];
+	for (var i = 0; i < players.length; i++) {
+		
+		var player = players[i];
+		
+		// Declare list of cards used by each player during war
+		playerIndexToCardArrayMap[i] = [];
+		
+		// Add 2 cards to the above list
+		for (var j = 0; j < numberOfCardsPerPlayer; j++) {
+			if (player.hasCardsLeft()) {
+				var cardUsed = player.getCard();
+				playerIndexToCardArrayMap[i].push(cardUsed);
+				cardsUsedInThisSessionOfWar.push(cardUsed);
+			}
+		}
+	}
+		
+	// Find the winning player(s)
+	var playersWithTheMaxCard = [];
+	var maxCardValue = 0;
+	for (var playerIndex in playerIndexToCardArrayMap) {
+				
+		// Make sure this player had enough cards to actually compete
+		if (playerIndexToCardArrayMap[playerIndex].length == numberOfCardsPerPlayer) {
+						
+			var cardValue = playerIndexToCardArrayMap[playerIndex][numberOfCardsPerPlayer - 1].getValue();
+			
+			if (cardValue > maxCardValue) {
+				
+				// If this is a new max, empty the playersWithTheMaxCard list, add this player, and redefine the maxCardValue
+				maxCardValue = cardValue;
+				playersWithTheMaxCard = [players[playerIndex]];
+								
+			} else if (cardValue == maxCardValue) {
+				
+				// If this player also has the max card value, add this player to playersWithTheMaxCard list
+				playersWithTheMaxCard.push(players[playerIndex]);
+				
+			}
+			
+		}
+		
+	}
+	
+	// Check for ties
+	if (playersWithTheMaxCard.length > 1) {
+		
+		alert("WARRR");
+				
+		// Initiate war between players with the max card
+		var winningPlayerAndCardsUsedDuringWar = this.drawCards(playersWithTheMaxCard, this.numberOfCardsPlayedDuringWar);
+		
+		// Add cards used during this session of war to the cards used in the recursive call of war
+		winningPlayerAndCardsUsedDuringWar.cards = winningPlayerAndCardsUsedDuringWar.cards.concat(cardsUsedInThisSessionOfWar);
+		
+		return winningPlayerAndCardsUsedDuringWar; 
+		
+	} else if (playersWithTheMaxCard.length == 1) {
+				
+		// There were no ties, there was one winner, add all cards in play to the winning player
+		var winningPlayer = playersWithTheMaxCard[0];
+
+		return {winner: winningPlayer, cards: cardsUsedInThisSessionOfWar};
+		
+	} else {
+				
+		// There were no winners (all warring players didn't have enough cards)
+		// I can't find any set of rules that specifies what should happen here, so I'll just say the first player is the winner
+		
+		var winningPlayer = players[0];
+		
+		return {winner: winningPlayer, cards: cardsUsedInThisSessionOfWar};
+		
+	}
+	
+	
 }
 
 // Public
@@ -135,7 +247,8 @@ Game.prototype.restartGame = function(numberOfPlayers) {
 		}
 	}
 	
-	// Generate a new shuffled deck and give each player an equal portion (Note: there may be leftover cards depending on the number of players)
+	// Generate a new shuffled deck and give each player an equal portion
+	// (Note: there may be leftover cards depending on the number of players)
 	var deck = this.generateShuffledDeck();
 	var playerHandSize = Math.floor(52 / this.players.length);
 	for (var i = 0; i < this.players.length; i++) {
