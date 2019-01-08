@@ -65,10 +65,13 @@ Card.prototype.getValue = function() {
 Card.prototype.generateView = function() {
 	// Generate a jQuery object to append to the game interface for this card
 	
+	return $('<div class="card">Card ('+this.getSuit()+' '+this.getType()+')</div>');
 	
 }
 
 // Static function
 Card.prototype.generateReverseView = function() {
 	// Generate a jQuery object to append to the game interface for the backside of a card
+	
+	return $('<div class="card">R-Card</div>');
 }

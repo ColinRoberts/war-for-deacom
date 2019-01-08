@@ -3,12 +3,13 @@
 		<script src="src/jquery-3.3.1.min.js"></script>
 		<script src="Game.js"></script>
 		<script src="Card.js"></script>
+		<script src="Player.js"></script>
 		<script type="text/javascript">
 			
 			$(document).ready(function() {
 				
 				var gameInterface = $("#game_interface");
-				var game = new Game(gameInterface);
+				var game = new Game(gameInterface, 2);
 				
 			});
 			
@@ -26,23 +27,17 @@
 				padding: 8%;
 				box-sizing: border-box;
 			}
-			#scoreboard {
-				height: 20%;
+			#card_table {
+				height: 50%;
 				width: 100%;
 			}
-			#card_containers {
+			#player_containers {
 				width: 100%;
-				height: 60%;
+				height: 30%;
 			}
 			#controls {
 				width: 100%;
 				height: 20%;
-			}
-			#user_pot, #center, #computer_pot {
-				display: inline-block;
-				height: 100%;
-				vertical-align: top;
-				box-sizing: border-box;
 			}
 			#user_pot, #computer_pot {
 				width: 25%;
@@ -50,22 +45,24 @@
 			#center {
 				width: 50%;
 			}
+			.player_container {
+				display: inline-block;
+				height: 100%;
+			}
+			.card {
+				height
+			}
+			.card.reverse {
+				
+			}
 		</style>
 	</head>
 	<body>
 		<div id="game_interface">
-			<div id="scoreboard">
-				War
-			</div><div id="card_containers">
-				<div id="user_pot">
-					<label>User pot</label>
-					
-				</div><div id="center">
-					
-				</div><div id="computer_pot">
-					<label>Computer pot</label>
-					
-				</div>
+			<div id="card_table">
+				
+			</div><div id="player_containers">
+				
 			</div><div id="controls">
 				<div id="gameplay_controls">
 					<button id="next_round">Next Round</button>
