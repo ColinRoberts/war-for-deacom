@@ -10,7 +10,19 @@
 				
 				var gameInterface = $("#game_interface");
 				var numberOfPlayers = 2;
-				var game = new Game(gameInterface, numberOfPlayers);
+				var numberOfCardsPlayedDuringWar = 2;
+				var addPotCardsToHand = false;
+				var game = new Game(gameInterface, numberOfPlayers, numberOfCardsPlayedDuringWar, addPotCardsToHand);
+				
+				$("#next_round").click(function() {
+					game.playRound();
+				});
+				$("#gameplay_controls .restart_game").click(function() {
+					game.restartGame();
+				});
+				$("#finished_controls .restart_game").click(function() {
+					game.restartGame();
+				});
 				
 			});
 			
@@ -20,25 +32,72 @@
 				width: 100%;
 				height: 100%;
 				margin: 0px;
-			}
-			* {
-				outline: 1px solid red;
+				font-family: Arial;
 			}
 			#game_interface {
 				padding: 8%;
 				box-sizing: border-box;
+				position: relative;
 			}
 			#card_table {
 				height: 50%;
 				width: 100%;
+				border-radius: 20px;
+				border: 1px solid #CECFD2;
+				position: relative;
+				overflow: hidden;
 			}
-			#player_containers {
+			#game_winner {
+				position: absolute;
+				top: 20px;
+				font-size: 30px;
+				text-align: center;
+				width: 100%;
+				display: none;
+				background: white;
+			    height: 90%;
+			    border-radius: 20px;
+			    border: 1px solid #cecfd2;
+			    width: 90%;
+			    top: 5%;
+			    left: 5%;
+			    box-sizing: border-box;
+			    padding: 3%;
+			    z-index: 3;
+			}
+			#round_winner {
+				text-align: center;
+				width: 100%;
+				padding: 40px;
+				box-sizing: border-box
+			}
+			#player_hand_containers {
 				width: 100%;
 				height: 30%;
+				padding-top: 10px;
+				box-sizing: border-box;
 			}
 			#controls {
 				width: 100%;
 				height: 20%;
+			}
+			#controls button {
+				padding: 15px;
+				background: white;
+				border: 1px solid #CECFD2;
+				border-radius: 10px;
+				display: block;
+				margin: 5px auto;
+				outline: none;
+			}
+			#controls button:hover {
+				cursor: pointer;
+			}
+			#controls button:active {
+				background: ;
+			}
+			#controls button.small {
+				padding: 5px;
 			}
 			#user_pot, #computer_pot {
 				width: 25%;
@@ -46,23 +105,95 @@
 			#center {
 				width: 50%;
 			}
-			.player_container {
+			.player_hand_container {
 				display: inline-block;
 				height: 100%;
+				vertical-align: top;
+				overflow: scroll;
+			}
+			.player_table_container {
+				display: inline-block;
+				vertical-align: top;
+				overflow: scroll;
+				box-sizing: border-box;
+				padding: 10px;
+				text-align: center;
 			}
 			.card {
-				height
+				height: 60px;
+				width: 40px;
+				box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.05);
+				border-radius: 3px;
+				border: 1px solid #CECFD2;
+				text-align: center;
+				box-sizing: border-box;
+				margin: 5px;
+				padding-top: 25px;
+				font-weight: 600;
+				font-size: 10px;
+				text-transform: uppercase;
+				background: white;
+				position: relative;
+			}
+			.card.spades, .card.clubs {
+				border: 1px solid black;
+			}
+			.card.hearts, .card.diamonds {
+				border: 1px solid red;
+			}
+			.card.spades:after, .card.spades:before, .card.hearts:after, .card.hearts:before, .card.clubs:after, .card.clubs:before, .card.diamonds:after, .card.diamonds:before {
+				position: absolute;
+				font-size: 8px;
+			}
+			.card.spades:after, .card.hearts:after, .card.clubs:after, .card.diamonds:after {
+				top: 5%;
+				left: 5%;
+			}
+			.card.spades:before, .card.hearts:before, .card.clubs:before, .card.diamonds:before {
+				bottom: 2%;
+				right: 5%;
+			}
+			.card.spades:after, .card.spades:before, .card.hearts:after, .card.hearts:before, .card.clubs:after, .card.clubs:before, .card.diamonds:after, .card.diamonds:before {
+				position: absolute;
+				font-size: 8px;
+			}
+			.card.spades:after, .card.spades:before {
+				content: "S";
+			}
+			.card.hearts:after, .card.hearts:before {
+				content: "H";
+			}
+			.card.clubs:after, .card.clubs:before {
+				content: "C";
+			}
+			.card.diamonds:after, .card.diamonds:before {
+				content: "D";
 			}
 			.card.reverse {
 				
+			}
+			.card_container {
+				width: 20px;
+				display: inline-block;
+				position: relative;
+			}
+			.card_container:hover {
+				z-index: 2;
+			}
+			.card_container:hover .card {
+				box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
 			}
 		</style>
 	</head>
 	<body>
 		<div id="game_interface">
 			<div id="card_table">
-				
-			</div><div id="player_containers">
+				<div id="game_winner"></div>
+				<div id="round_winner"></div>
+				<div id="player_table_containers">
+					
+				</div>
+			</div><div id="player_hand_containers">
 				
 			</div><div id="controls">
 				<div id="gameplay_controls">

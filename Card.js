@@ -50,28 +50,37 @@ function Card(suit, type) {
 	
 }
 
+// Public
+// Returns the card type (number or word)
 Card.prototype.getType = function() {
 	return this.type;
 }
 
+// Public
+// Returns the card's suit
 Card.prototype.getSuit = function() {
 	return this.suit;
 }
 
+// Public
+// Returns the value of the card (ace = 1, jack = 11, queen = 12, king = 13)
 Card.prototype.getValue = function() {
 	return this.value;
 }
 
+// Public
+// Generates a view of the front of this card
 Card.prototype.generateView = function() {
 	// Generate a jQuery object to append to the game interface for this card
 	
-	return $('<div class="card">Card ('+this.getSuit()+' '+this.getType()+')</div>');
+	return $('<div class="card_container"><div class="card '+this.getSuit()+'">'+this.getType()+'</div></div>');
 	
 }
 
-// Static function
+// Public
+// Generates the backside view of this card
 Card.prototype.generateReverseView = function() {
 	// Generate a jQuery object to append to the game interface for the backside of a card
 	
-	return $('<div class="card">R-Card</div>');
+	return $('<div class="card_container"><div class="card">?</div></div>');
 }
